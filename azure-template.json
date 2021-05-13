@@ -1,0 +1,46 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string",
+            "defaultValue": "\\\"John Dole\\\""
+        }
+    },
+    "variables": {
+        "cliResourceName": "AzCLIAppRegDeploymentScript",
+        "appServicePlanName": "[concat('Plan-', parameters('name'))]",
+        "aadAppUri": "[concat('https://', parameters('name'), 'azurewebsites.net')]",
+        "aadAppRedirectUri": "[concat('https://', parameters('name'), 'azurewebsites.net/signin-oidc')]",
+        "cliArg": "[concat(parameters('name'), ' ', variables('aadAppUri'), ' ', variables('aadAppRedirectUri'))]"
+    },
+    "functions": [],
+    "resources": [
+        {
+            "name": "[concat('cli', uniqueString(resourceGroup().id))]",
+            "type": "Microsoft.Resources/deploymentScripts",
+            "apiVersion": "2019-10-01-preview",
+            "location": "[resourceGroup().location]",
+            "kind": "AzureCLI",
+            "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "/subscriptions/01234567-89AB-CDEF-0123-456789ABCDEF/resourceGroups/myResourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/myID": {}
+                }
+            },
+            "properties": {
+                "azCliVersion": "2.0.8",
+                "timeout": "PT30M",
+                "arguments": "[variables('cliArg')]",
+                "scriptContent": "
+            appInfo =$(az ad app create --display-name $1 --identifier-uris \"$2\" --reply-urls \"$3\")
+            echo $appInfo > $AZ_SCRIPTS_OUTPUT_PATH
+        ",
+                "cleanupPreference": "OnSuccess",
+                "retentionInterval": "P1D"
+            }
+
+        }
+    ],
+    "outputs": {}
+}
