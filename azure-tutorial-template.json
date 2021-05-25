@@ -16,12 +16,7 @@
       "AzCliVersion": "2.0.80",
       "timeout": "PT30M",
       "arguments": "[variables('cliArg')]",
-      "scriptContent": "
-
-      appInfo=$(az ad app create --display-name templateApp)
-      echo $appInfo > $AZ_SCRIPTS_OUTPUT_PATH
-
-      ",
+      "scriptContent": "appInfo=$(az ad app create --display-name templateApp) echo $appInfo > $AZ_SCRIPTS_OUTPUT_PATH",
       "cleanupPreference": "OnSuccess",
       "retentionInterval": "P1D"
     }
