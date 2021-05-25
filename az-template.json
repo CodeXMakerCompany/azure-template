@@ -4,39 +4,32 @@
     "parameters": {
         "name": {
             "type": "string",
-            "defaultValue": "\\\"TemplateDefaultValue\\\""
-        },
-        "identity": {
-            "type": "string"
-        },
-        "utcValue": {
-            "type": "string",
-            "defaultValue": "[utcNow()]"
+            "defaultValue": "codexmaker-template"
         }
     },
     "variables": {
+        "cliResourceName": "AzCLIAppRegDeploymentScript",
+        "appServicePlanName": "[concat('Plan-', parameters('name'))]",
         "aadAppUri": "[concat('https://', parameters('name'), 'azurewebsites.net')]",
         "aadAppRedirectUri": "[concat('https://', parameters('name'), 'azurewebsites.net/signin-oidc')]",
-        "cliArg": "[concat(parameters('name'), ' ', variables('aadAppUri'), ' ', variables('aadAppRedirectUri'))]",
-        "Contributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'MySuscriptionId')]"
+        "cliArg": "[concat(parameters('name'), ' ', variables('aadAppUri'), ' ', variables('aadAppRedirectUri'))]"
     },
     "functions": [],
     "resources": [
         {
-            "name": "[concat('cli', uniqueString(resourceGroup().id))]",
+            "name": "arg-introduction-088",
             "type": "Microsoft.Resources/deploymentScripts",
-            "apiVersion": "2019-10-01-preview",
-            "location": "[resourceGroup().location]",
+            "apiVersion": "2020-10-01",
+            "location": "North Europe",
             "kind": "AzureCLI",
             "identity": {
+                "tenantId": "23bab26e-caf5-4dbd-b38e-aa95ba8f1af6",
                 "type": "UserAssigned",
                 "userAssignedIdentities": {
-                    "[parameters('identity')]": {
-                    }
+                    "/subscriptions/2185a8bd-f4a6-45b0-84c5-0627fd10d13e/resourceGroups/arg-introduction-01/providers/Microsoft.ManagedIdentity/userAssignedIdentities/myID": {}
                 }
             },
             "properties": {
-                "forceUpdateTag": "[parameters('utcValue')]",
                 "azCliVersion": "2.0.8",
                 "timeout": "PT30M",
                 "arguments": "[variables('cliArg')]",
