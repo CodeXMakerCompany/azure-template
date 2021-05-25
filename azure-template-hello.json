@@ -1,0 +1,23 @@
+{
+    "type": "Microsoft.Resources/deploymentScripts",
+    "apiVersion": "2019-10-01-preview",
+    "name": "[variables('cliResourceName')]",
+    "location": "[resourceGroup().location]",
+    "kind": "AzureCLI",
+    "identity": {
+      "type": "UserAssigned",
+      "userAssignedIdentities": {
+        "[parameters('identity')]": {
+        }
+      }
+    },
+    "properties": {
+      "forceUpdateTag": "[parameters('utcValue')]",
+      "AzCliVersion": "2.0.80",
+      "timeout": "PT30M",
+      "arguments": "[variables('cliArg')]",
+      "scriptContent": "echo Hello $1;",
+      "cleanupPreference": "OnSuccess",
+      "retentionInterval": "P1D"
+    }
+  }
