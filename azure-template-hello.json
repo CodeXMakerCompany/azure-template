@@ -1,23 +1,45 @@
 {
-    "type": "Microsoft.Resources/deploymentScripts",
-    "apiVersion": "2019-10-01-preview",
-    "name": "[variables('cliResourceName')]",
-    "location": "[resourceGroup().location]",
-    "kind": "AzureCLI",
-    "identity": {
-      "type": "UserAssigned",
-      "userAssignedIdentities": {
-        "[parameters('identity')]": {
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "utcValue": {
+            "defaultValue": "[utcNow()]",
+            "type": "String"
+        }, 
+        "appName": {
+            "defaultValue": "HyperApp",
+            "type": "String"
         }
-      }
     },
-    "properties": {
-      "forceUpdateTag": "[parameters('utcValue')]",
-      "AzCliVersion": "2.0.80",
-      "timeout": "PT30M",
-      "arguments": "[variables('cliArg')]",
-      "scriptContent": "echo Hello $1;",
-      "cleanupPreference": "OnSuccess",
-      "retentionInterval": "P1D"
-    }
-  }
+    "variables": {
+        "cliResourceName": "AzCLIAppRegDeploymentScript",
+        "appServicePlanName": "[concat('Plan-', parameters('appName'))]",
+        "aadAppUri": "[concat('https://', parameters('appName'), 'azurewebsites.net')]",
+        "aadAppRedirectUri": "[concat('https://', parameters('appName'), 'azurewebsites.net/signin-oidc')]",
+        "cliArg": "[concat(parameters('appName'), ' ', variables('aadAppUri'), ' ', variables('aadAppRedirectUri'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deploymentScripts",
+            "apiVersion": "2020-10-01",
+            "name": "deploy-script-v1",
+            "location": "East US",
+            "kind": "AzureCLI",
+            "identity": {
+                "type": "userAssigned",
+                "userAssignedIdentities": {
+                    "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HyperIdentity": {}
+                }
+            },
+            "properties": {
+                "forceUpdateTag": "[parameters('utcValue')]",
+                "azCliVersion": "2.3.1",
+                "timeout": "PT30M",
+                "arguments": "[variables('cliArg')]",
+                "scriptContent": "appInfo =$(az ad app create --display-name HyperApp) echo $appInfo > $AZ_SCRIPTS_OUTPUT_PATH",
+                "cleanupPreference": "OnSuccess",
+                "retentionInterval": "P1D"
+            }
+        }
+    ]
+}
