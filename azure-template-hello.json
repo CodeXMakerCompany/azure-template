@@ -5,7 +5,7 @@
         "utcValue": {
             "defaultValue": "[utcNow()]",
             "type": "String"
-        }, 
+        },
         "appName": {
             "defaultValue": "HyperApp",
             "type": "String"
@@ -16,7 +16,8 @@
         "appServicePlanName": "[concat('Plan-', parameters('appName'))]",
         "aadAppUri": "[concat('https://', parameters('appName'), 'azurewebsites.net')]",
         "aadAppRedirectUri": "[concat('https://', parameters('appName'), 'azurewebsites.net/signin-oidc')]",
-        "cliArg": "[concat(parameters('appName'), ' ', variables('aadAppUri'), ' ', variables('aadAppRedirectUri'))]"
+        "cliArg": "[concat(parameters('appName'), ' ', variables('aadAppUri'), ' ', variables('aadAppRedirectUri'))]",
+        "identity": "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HyperIdentity"
     },
     "resources": [
         {
@@ -28,7 +29,7 @@
             "identity": {
                 "type": "userAssigned",
                 "userAssignedIdentities": {
-                    "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HyperIdentity": {}
+                    "[parameters('identity')]": {}
                 }
             },
             "properties": {
@@ -36,7 +37,7 @@
                 "azCliVersion": "2.3.1",
                 "timeout": "PT30M",
                 "arguments": "[variables('cliArg')]",
-                "scriptContent": "appInfo =$(az ad app create --display-name HyperApp) echo $appInfo > $AZ_SCRIPTS_OUTPUT_PATH",
+                "scriptContent": "az ad app create --display-name HyperApp",
                 "cleanupPreference": "OnSuccess",
                 "retentionInterval": "P1D"
             }
