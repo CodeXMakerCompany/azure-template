@@ -1,5 +1,5 @@
 Install-Module AzureAD -Force
-sleep 2000
+sleep 2
 Import-Module AzureAD
 Connect-AzureAD -Confirm
 
