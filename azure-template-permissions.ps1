@@ -1,6 +1,6 @@
-Install-Module AzureAD.Standard.Preview -Force
-
-import-Module AzureAD.Standard.Preview -Force
+Install-Module AzureAD -Force
+sleep 2000
+Import-Module AzureAD
 Connect-AzureAD -Confirm
 
 $msiName          = ${Env:identityName}
