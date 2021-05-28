@@ -1,10 +1,11 @@
-echo ${Env:resourceGroupText}
+Install-Module AzureAD.Standard.Preview -Force
+
+import-Module AzureAD.Standard.Preview -Force
 Connect-AzureAD -Confirm
-Install-Module -Name Az.ManagedServiceIdentity -Force
 
 $msiName          = ${Env:identityName}
 $msiObjectId      = ${Env:msiObjectId}
-$msiResourceGroup = ${Env:resourceGroupName} 
+$msiResourceGroup = ${Env:resourceGroupText} 
 
 $GraphAppId  = (Get-AzUserAssignedIdentity -ResourceGroupName $msiResourceGroup -Name $msiName).PrincipalId
 
