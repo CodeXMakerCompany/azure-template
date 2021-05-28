@@ -1,6 +1,3 @@
-Connect-AzureAD -Confirm
-Install-Module -Name Az.ManagedServiceIdentity -Force
-
 $msiName          = ${Env:identityName}
 $msiObjectId      = ${Env:msiObjectId}
 $msiResourceGroup = ${Env:resourceGroupName} 
