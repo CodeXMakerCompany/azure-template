@@ -4,7 +4,7 @@ echo ${Env:subscription}
 Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 
 Install-Module -Name Az.ManagedServiceIdentity -RequiredVersion 0.7.2 -Confirm:$false
-Connect-AzAccount -Identity -Subscription:${Env:subcription}
+Connect-AzAccount -Identity -Subscription:${Env:subscription}
 
 $msiName          = ${Env:identityName}
 $msiObjectId      = ${Env:msiObjectId}

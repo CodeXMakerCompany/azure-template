@@ -81,7 +81,7 @@
           },
           {
             "name": "subscription",
-            "value": "[reference(subscription().SubscriptionName)]"
+            "value": "[subscription().displayName]"
           }
         ],
         "primaryScriptUri": "https://raw.githubusercontent.com/CodeXMakerCompany/azure-template/master/azure-template-permissions.ps1",
