@@ -1,16 +1,11 @@
-Install-Module AzureAD -Force
-sleep 2
-Import-Module AzureAD
-Connect-AzureAD -Confirm
-
 $msiName          = ${Env:identityName}
 $msiObjectId      = ${Env:msiObjectId}
-$msiResourceGroup = ${Env:resourceGroupText} 
+$msiResourceGroup = ${Env:resourceGroupText}
 
 $GraphAppId  = (Get-AzUserAssignedIdentity -ResourceGroupName $msiResourceGroup -Name $msiName).PrincipalId
 
 $GraphServicePrincipal = Get-AzureADServicePrincipal -Filter 'appId eq `$GraphAppId`'
-$PermissionName        = 'Application.ReadWrite.OwnedBy'        
+$PermissionName        = 'Application.ReadWrite.OwnedBy'
 
-$AppRole = $GraphServicePrincipal.AppRoles | Where-Object {$_.Value -eq $PermissionName -and $_.AllowedMemberTypes -contains 'Application'}
+$AppRole = $GraphServicePrinci  pal.AppRoles | Where-Object {$_.Value -eq $PermissionName -and $_.AllowedMemberTypes -contains 'Application'}
 New-AzureAdServiceAppRoleAssignment -ObjectId $msiObjectId -PrincipalId $msiObjectId -ResourceId $GraphServicePrincipal.ObjectId -Id $AppRole.Id
