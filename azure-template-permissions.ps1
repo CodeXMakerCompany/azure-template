@@ -19,8 +19,6 @@ echo $identity;
 echo "----------------------------------------------"
 echo "----------------------------------------------"
 
-Connect-AzAccount
-
 $GraphAppId  = (Get-AzUserAssignedIdentity -ResourceGroupName $msiResourceGroup -Name $msiName).PrincipalId
 
 $GraphServicePrincipal = Get-AzureADServicePrincipal -Filter 'appId eq `$GraphAppId`'
