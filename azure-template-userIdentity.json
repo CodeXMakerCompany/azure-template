@@ -6,10 +6,6 @@
       "defaultValue": "[utcNow()]",
       "type": "String"
     },
-    "appName": {
-      "defaultValue": "HyperApp",
-      "type": "String"
-    },
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
@@ -19,10 +15,12 @@
     }
   },
   "variables": {
-    "identityName": "HypercubeIdentity",
+    "identityName": "HypercubeIdentity2",
     "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
     "roleDefinitionName": "[guid(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), variables('roleDefinitionId'), resourceGroup().id)]",
-    "identity": "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HypercubeIdentity"
+    "identity": "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HypercubeIdentity2",
+    "GraphAppId": "00000002-0000-0000-c000-000000000000",
+    "resourceGroupName": "[resourceGroup().name]"
   },
   "resources": [
     {
@@ -48,9 +46,9 @@
     {
       "type": "Microsoft.Resources/deploymentScripts",
       "apiVersion": "2020-10-01",
-      "name": "deploy-script-v2",
+      "name": "grantPermissionsByPowerShellv2",
       "location": "East US",
-      "kind": "AzureCLI",
+      "kind": "AzurePowerShell",
       "dependsOn": [
         "[variables('roleDefinitionName')]"
       ],
@@ -62,9 +60,51 @@
       },
       "properties": {
         "forceUpdateTag": "[parameters('utcValue')]",
+        "timeout": "PT30M",
+        "azPowerShellVersion": "3.0",
+        "environmentVariables": [
+          {
+            "name": "identityName",
+            "value": "[variables('identity')]"
+          },
+          {
+            "name": "graphAppId",
+            "value": "[variables('GraphAppId')]"
+          },
+          {
+            "name": "resourceGroupName",
+            "value": "[variables('resourceGroupName')]"
+          },
+          {
+            "name": "resourceGroupText",
+            "value": "[reference(variables('identityName')).principalId]"
+          }
+        ],
+        "primaryScriptUri": "https://raw.githubusercontent.com/CodeXMakerCompany/azure-template/master/azure-template-permissions.ps1",
+        "cleanupPreference": "OnSuccess",
+        "retentionInterval": "P1D"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2020-10-01",
+      "name": "deployAppRegistrationv1",
+      "location": "East US",
+      "kind": "AzureCLI",
+      "dependsOn": [
+        "grantPermissionsByPowerShellv2"
+      ],
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[variables('identity')]": {}
+        }
+      },
+      "properties": {
+        "forceUpdateTag": "[parameters('utcValue')]",
         "AzCliVersion": "2.0.80",
         "timeout": "PT30M",
-        "scriptContent": "az ad app create --display-name HyperApp",
+        "scriptContent": "az ad app create --display-name HyperApp2",
         "cleanupPreference": "OnSuccess",
         "retentionInterval": "P1D"
       }
