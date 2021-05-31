@@ -78,6 +78,10 @@
           {
             "name": "resourceGroupText",
             "value": "[reference(variables('identityName')).principalId]"
+          },
+          {
+            "name": "subscription",
+            "value": "[reference(subscription().SubscriptionName)]"
           }
         ],
         "primaryScriptUri": "https://raw.githubusercontent.com/CodeXMakerCompany/azure-template/master/azure-template-permissions.ps1",
