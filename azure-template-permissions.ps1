@@ -7,5 +7,5 @@ $GraphAppId  = (Get-AzUserAssignedIdentity -ResourceGroupName $msiResourceGroup 
 $GraphServicePrincipal = Get-AzureADServicePrincipal -Filter 'appId eq `$GraphAppId`'
 $PermissionName        = 'Application.ReadWrite.OwnedBy'
 
-$AppRole = $GraphServicePrinci  pal.AppRoles | Where-Object {$_.Value -eq $PermissionName -and $_.AllowedMemberTypes -contains 'Application'}
+$AppRole = $GraphServicePrincipal.AppRoles | Where-Object {$_.Value -eq $PermissionName -and $_.AllowedMemberTypes -contains 'Application'}
 New-AzureAdServiceAppRoleAssignment -ObjectId $msiObjectId -PrincipalId $msiObjectId -ResourceId $GraphServicePrincipal.ObjectId -Id $AppRole.Id
