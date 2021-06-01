@@ -12,15 +12,35 @@
       "metadata": {
         "description": "The location for the script resource."
       }
+    },
+    "actions": {
+      "type": "array",
+      "defaultValue": [
+        "Microsoft.Resources/subscriptions/resourceGroups/read",
+        "microsoft.directory/applications/createAsOwner"
+      ],
+      "metadata": {
+        "description": "Array of actions for the roleDefinition"
+      }
+    },
+    "roleName": {
+      "type": "string",
+      "defaultValue": "HyperIdentityRole",
+      "metadata": {
+        "description": "Used for application/service principal creation"
+      }
+    },
+    "notActions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Array of notActions for the roleDefinition"
+      }
     }
   },
   "variables": {
     "identityName": "HypercubeIdentity2",
-    "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
-    "roleDefinitionName": "[guid(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), variables('roleDefinitionId'), resourceGroup().id)]",
-    "identity": "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HypercubeIdentity2",
-    "GraphAppId": "00000002-0000-0000-c000-000000000000",
-    "resourceGroupName": "[resourceGroup().name]"
+    "identity": "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HypercubeIdentity2"
   },
   "resources": [
     {
@@ -31,62 +51,24 @@
     },
     {
       "type": "Microsoft.Authorization/roleAssignments",
-      "apiVersion": "2020-04-01-preview",
-      "name": "[variables('roleDefinitionName')]",
+      "apiVersion": "2018-07-01",
+      "name": "[parameters('roleName')]",
       "dependsOn": [
         "[variables('identityName')]"
       ],
       "properties": {
-        "roleDefinitionId": "[variables('roleDefinitionId')]",
-        "principalId": "[reference(variables('identityName')).principalId]",
-        "scope": "[resourceGroup().id]",
-        "principalType": "ServicePrincipal"
-      }
-    },
-    {
-      "type": "Microsoft.Resources/deploymentScripts",
-      "apiVersion": "2020-10-01",
-      "name": "grantPermissionsByPowerShellv2",
-      "location": "East US",
-      "kind": "AzurePowerShell",
-      "dependsOn": [
-        "[variables('roleDefinitionName')]"
-      ],
-      "identity": {
-        "type": "UserAssigned",
-        "userAssignedIdentities": {
-          "[variables('identity')]": {}
-        }
-      },
-      "properties": {
-        "forceUpdateTag": "[parameters('utcValue')]",
-        "timeout": "PT30M",
-        "azPowerShellVersion": "3.0",
-        "environmentVariables": [
+        "roleName": "[parameters('roleName')]",
+        "description": "",
+        "type": "customRole",
+        "isCustom": true,
+        "permissions": [
           {
-            "name": "identityName",
-            "value": "[variables('identityName')]"
-          },
-          {
-            "name": "graphAppId",
-            "value": "[variables('GraphAppId')]"
-          },
-          {
-            "name": "groupName",
-            "value": "[resourceGroup().name]"
-          },
-          {
-            "name": "msiObjectId",
-            "value": "[reference(variables('identityName')).principalId]"
-          },
-          {
-            "name": "subscription",
-            "value": "[subscription().displayName]"
-          }
+            "actions": "[parameters('actions')]",
+            "notActions": "[parameters('notActions')]"
+          }          
         ],
-        "primaryScriptUri": "https://raw.githubusercontent.com/CodeXMakerCompany/azure-template/master/azure-template-permissions.ps1",
-        "cleanupPreference": "OnSuccess",
-        "retentionInterval": "P1D"
+        "principalType": "ServicePrincipal"
+
       }
     },
     {
@@ -96,7 +78,7 @@
       "location": "East US",
       "kind": "AzureCLI",
       "dependsOn": [
-        "grantPermissionsByPowerShellv2"
+        "[parameters('roleName')]"
       ],
       "identity": {
         "type": "UserAssigned",
