@@ -3,7 +3,9 @@ Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 
 echo ${Env:identityName}
 echo ${Env:msiObjectId}
-echo ${Env:resourceGroupText}
+echo ${Env:resourceGroupName}
+echo ${Env:graphAppId}
+echo ${Env:subscription}
 
 Install-Module -Name Az.ManagedServiceIdentity -RequiredVersion 0.7.2 -Confirm:$false
 
@@ -12,14 +14,12 @@ echo "----------------------------------------------"
 
 $msiName          = ${Env:identityName}
 $msiObjectId      = ${Env:msiObjectId}
-$msiResourceGroup = ${Env:resourceGroupText}
-$identity         = Get-AzUserAssignedIdentity -ResourceGroupName $msiResourceGroup -Name $msiName
+$msiResourceGroup = ${Env:resourceGroupName}
 
-echo $identity;
 echo "----------------------------------------------"
 echo "----------------------------------------------"
 
-$GraphAppId  = (Get-AzUserAssignedIdentity -ResourceGroupName $msiResourceGroup -Name $msiName).PrincipalId
+$GraphAppId  = ${Env:graphAppId}
 
 $GraphServicePrincipal = Get-AzureADServicePrincipal -Filter 'appId eq `$GraphAppId`'
 $PermissionName        = 'Application.ReadWrite.OwnedBy'

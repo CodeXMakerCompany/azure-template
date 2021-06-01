@@ -76,7 +76,7 @@
             "value": "[resourceGroup().name]"
           },
           {
-            "name": "resourceGroupText",
+            "name": "msiObjectId",
             "value": "[reference(variables('identityName')).principalId]"
           },
           {
