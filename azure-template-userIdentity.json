@@ -45,7 +45,8 @@
   "variables": {
     "identityName": "HypercubeIdentity2",
     "identity": "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HypercubeIdentity2",
-    "roleDefName": "[guid(subscription().id, string(parameters('actions')), string(parameters('notActions')))]"
+    "roleDefName": "[guid(subscription().id, string(parameters('actions')), string(parameters('notActions')))]",
+    "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefName'))]"
   },
   "resources": [
     {
@@ -55,7 +56,7 @@
       "location": "[parameters('location')]"
     },
     {
-      "type": "Microsoft.Authorization/roleAssignments",
+      "type": "Microsoft.Authorization/roleDefinitions",
       "apiVersion": "2018-07-01",
       "name": "[variables('roleDefName')]",
       "dependsOn": [
@@ -78,13 +79,27 @@
       }
     },
     {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2020-04-01-preview",
+      "name": "RoleAssignment",
+      "dependsOn": [
+        "[variables('roleDefName')]"
+      ],
+      "properties": {
+        "roleDefinitionId": "[variables('roleDefinitionId')]",
+        "principalId": "[reference(variables('identityName')).principalId]",
+        "scope": "[resourceGroup().id]",
+        "principalType": "ServicePrincipal"
+      }
+    },
+    {
       "type": "Microsoft.Resources/deploymentScripts",
       "apiVersion": "2020-10-01",
       "name": "deployAppRegistrationv1",
       "location": "East US",
       "kind": "AzureCLI",
       "dependsOn": [
-        "[variables('roleDefName')]"
+        "RoleAssignment"
       ],
       "identity": {
         "type": "UserAssigned",
