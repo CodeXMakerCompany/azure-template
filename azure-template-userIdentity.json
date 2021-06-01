@@ -44,9 +44,8 @@
   },
   "variables": {
     "identityName": "HypercubeIdentity2",
-    "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
     "identity": "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HypercubeIdentity2",
-    "roleDefinitionName": "[guid(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), variables('roleDefinitionId'), resourceGroup().id)]"
+    "roleDefinitionName": "[guid(subscription().id, string(parameters('actions')), string(parameters('notActions')))]"
   },
   "resources": [
     {
