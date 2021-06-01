@@ -1,27 +1,27 @@
 # Trusted configuration for PSGallery enable us to install required cmdlets without -Force tag
 Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
-Install-Module -Name AzureAD -Confirm:$false
+Install-Module -Name Az -Confirm:$false
+Import-Module Az
 
-echo ${Env:groupName}
-echo ${Env:identityName}
-echo ${Env:msiObjectId}
-echo ${Env:graphAppId}
-echo ${Env:subscription}
-
+echo $PSVersionTable.PSVersion
 echo "----------------------------------------------"
 echo "----------------------------------------------"
 
 $msiName          = ${Env:identityName}
 $msiObjectId      = ${Env:msiObjectId}
 $msiResourceGroup = ${Env:groupName}
+$GraphAppId       = ${Env:graphAppId}
+$PermissionName   = 'Application.ReadWrite.OwnedBy'
 
-$GraphAppId  = ${Env:graphAppId}
+$Credential = Get-Credential
+Connect-AzAccount -Credential $Credential
 
-$GraphServicePrincipal = Get-AzureADServicePrincipal -Filter 'appId eq `$GraphAppId`'
-$PermissionName        = 'Application.ReadWrite.OwnedBy'
+echo Get-AzADServicePrincipal
 
-echo "----------------------------------------------"
-echo "----------------------------------------------"
+# $GraphServicePrincipal = Get-AzADServicePrincipal -Filter 'appId eq `$GraphAppId`'
 
-$AppRole = $GraphServicePrincipal.AppRoles | Where-Object {$_.Value -eq $PermissionName -and $_.AllowedMemberTypes -contains 'Application'}
-New-AzureAdServiceAppRoleAssignment -ObjectId $msiObjectId -PrincipalId $msiObjectId -ResourceId $GraphServicePrincipal.ObjectId -Id $AppRole.Id
+# echo "----------------------------------------------"
+# echo "----------------------------------------------"
+
+# $AppRole = $GraphServicePrincipal.AppRoles | Where-Object {$_.Value -eq $PermissionName -and $_.AllowedMemberTypes -contains 'Application'}
+# New-AzureAdServiceAppRoleAssignment -ObjectId $msiObjectId -PrincipalId $msiObjectId -ResourceId $GraphServicePrincipal.ObjectId -Id $AppRole.Id
