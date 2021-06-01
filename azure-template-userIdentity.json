@@ -16,8 +16,12 @@
     "actions": {
       "type": "array",
       "defaultValue": [
-        "Microsoft.Resources/subscriptions/resourceGroups/read",
-        "microsoft.directory/applications/createAsOwner"
+        "Microsoft.Directory/applications/createAsOwner",
+        "Microsoft.Directory/servicePrincipals/createAsOwner",
+        "Microsoft.Storage/storageAccounts/*",
+        "Microsoft.ContainerInstance/containerGroups/*",
+        "Microsoft.Resources/deployments/*",
+        "Microsoft.Resources/deploymentScripts/*"
       ],
       "metadata": {
         "description": "Array of actions for the roleDefinition"
@@ -51,7 +55,7 @@
     },
     {
       "type": "Microsoft.Authorization/roleAssignments",
-      "apiVersion": "2018-07-01",
+      "apiVersion": "2020-10-01",
       "name": "[parameters('roleName')]",
       "dependsOn": [
         "[variables('identityName')]"
@@ -67,8 +71,9 @@
             "notActions": "[parameters('notActions')]"
           }          
         ],
-        "principalType": "ServicePrincipal"
-
+        "assignableScopes": [
+          "[subscription().id]"
+        ]
       }
     },
     {
