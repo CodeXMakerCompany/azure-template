@@ -73,7 +73,7 @@
           },
           {
             "name": "resourceGroupName",
-            "value": "[resourceGroup().name]"
+            "value": "[resourceGroup()]"
           },
           {
             "name": "msiObjectId",
