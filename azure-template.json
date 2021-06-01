@@ -1,54 +1,117 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "name": {
-            "type": "string",
-            "defaultValue": "\\\"TemplateDefaultValue\\\""
-        },
-        "identity": {
-            "type": "string"
-        },
-        "utcValue": {
-            "type": "string",
-            "defaultValue": "[utcNow()]"
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "utcValue": {
+      "defaultValue": "[utcNow()]",
+      "type": "String"
     },
-    "variables": {
-        "aadAppUri": "[concat('https://', parameters('name'), 'azurewebsites.net')]",
-        "aadAppRedirectUri": "[concat('https://', parameters('name'), 'azurewebsites.net/signin-oidc')]",
-        "cliArg": "[concat(parameters('name'), ' ', variables('aadAppUri'), ' ', variables('aadAppRedirectUri'))]",
-        "Contributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'MySuscriptionId')]"
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "The location for the script resource."
+      }
+    }
+  },
+  "variables": {
+    "identityName": "HypercubeIdentity2",
+    "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
+    "roleDefinitionName": "[guid(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), variables('roleDefinitionId'), resourceGroup().id)]",
+    "identity": "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HypercubeIdentity2",
+    "GraphAppId": "00000002-0000-0000-c000-000000000000",
+    "resourceGroupName": "[resourceGroup().name]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "name": "[variables('identityName')]",
+      "apiVersion": "2018-11-30",
+      "location": "[parameters('location')]"
     },
-    "functions": [],
-    "resources": [
-        {
-            "name": "[concat('cli', uniqueString(resourceGroup().id))]",
-            "type": "Microsoft.Resources/deploymentScripts",
-            "apiVersion": "2019-10-01-preview",
-            "location": "[resourceGroup().location]",
-            "kind": "AzureCLI",
-            "identity": {
-                "type": "UserAssigned",
-                "userAssignedIdentities": {
-                    "[parameters('identity')]": {
-                    }
-                }
-            },
-            "properties": {
-                "forceUpdateTag": "[parameters('utcValue')]",
-                "azCliVersion": "2.0.8",
-                "timeout": "PT30M",
-                "arguments": "[variables('cliArg')]",
-                "scriptContent": "
-            appInfo =$(az ad app create --display-name $1 --identifier-uris \"$2\" --reply-urls \"$3\")
-            echo $appInfo > $AZ_SCRIPTS_OUTPUT_PATH
-        ",
-                "cleanupPreference": "OnSuccess",
-                "retentionInterval": "P1D"
-            }
-
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2020-04-01-preview",
+      "name": "[variables('roleDefinitionName')]",
+      "dependsOn": [
+        "[variables('identityName')]"
+      ],
+      "properties": {
+        "roleDefinitionId": "[variables('roleDefinitionId')]",
+        "principalId": "[reference(variables('identityName')).principalId]",
+        "scope": "[resourceGroup().id]",
+        "principalType": "ServicePrincipal"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2020-10-01",
+      "name": "grantPermissionsByPowerShellv2",
+      "location": "East US",
+      "kind": "AzurePowerShell",
+      "dependsOn": [
+        "[variables('roleDefinitionName')]"
+      ],
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[variables('identity')]": {}
         }
-    ],
-    "outputs": {}
+      },
+      "properties": {
+        "forceUpdateTag": "[parameters('utcValue')]",
+        "timeout": "PT30M",
+        "azPowerShellVersion": "3.0",
+        "environmentVariables": [
+          {
+            "name": "identityName",
+            "value": "[variables('identityName')]"
+          },
+          {
+            "name": "graphAppId",
+            "value": "[variables('GraphAppId')]"
+          },
+          {
+            "name": "groupName",
+            "value": "[resourceGroup().name]"
+          },
+          {
+            "name": "msiObjectId",
+            "value": "[reference(variables('identityName')).principalId]"
+          },
+          {
+            "name": "subscription",
+            "value": "[subscription().displayName]"
+          }
+        ],
+        "primaryScriptUri": "https://raw.githubusercontent.com/CodeXMakerCompany/azure-template/master/azure-template-permissions.ps1",
+        "cleanupPreference": "OnSuccess",
+        "retentionInterval": "P1D"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2020-10-01",
+      "name": "deployAppRegistrationv1",
+      "location": "East US",
+      "kind": "AzureCLI",
+      "dependsOn": [
+        "grantPermissionsByPowerShellv2"
+      ],
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[variables('identity')]": {}
+        }
+      },
+      "properties": {
+        "forceUpdateTag": "[parameters('utcValue')]",
+        "AzCliVersion": "2.0.80",
+        "timeout": "PT30M",
+        "scriptContent": "az ad app create --display-name HyperApp2",
+        "cleanupPreference": "OnSuccess",
+        "retentionInterval": "P1D"
+      }
+    }
+  ]
 }
