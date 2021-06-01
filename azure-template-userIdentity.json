@@ -72,8 +72,8 @@
             "value": "[variables('GraphAppId')]"
           },
           {
-            "name": "resourceGroupName",
-            "value": "[resourceGroup()]"
+            "name": "groupName",
+            "value": "[resourceGroup().name]"
           },
           {
             "name": "msiObjectId",

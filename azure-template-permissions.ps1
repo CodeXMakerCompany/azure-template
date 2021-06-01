@@ -1,11 +1,14 @@
 # Trusted configuration for PSGallery enable us to install required cmdlets without -Force tag
 Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 
+echo ${Env:groupName}
 echo ${Env:identityName}
 echo ${Env:msiObjectId}
-echo ${Env:resourceGroupName}
 echo ${Env:graphAppId}
 echo ${Env:subscription}
+echo ${Env:graphAppId}
+echo ${Env:subscription}
+
 
 Install-Module -Name Az.ManagedServiceIdentity -RequiredVersion 0.7.2 -Confirm:$false
 
