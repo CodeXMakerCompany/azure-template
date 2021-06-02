@@ -16,8 +16,6 @@
     "actions": {
       "type": "array",
       "defaultValue": [
-        "Microsoft.Directory/applications/createAsOwner",
-        "Microsoft.Directory/servicePrincipals/createAsOwner",
         "Microsoft.Storage/storageAccounts/*",
         "Microsoft.ContainerInstance/containerGroups/*",
         "Microsoft.Resources/deployments/*",
