@@ -1,5 +1,10 @@
+#7a64b907-85ba-428c-880b-9f4027ae48ba
 
-$msiName="HyperIdentity"
+# Trusted configuration for PSGallery enable us to install required cmdlets without -Force tag
+Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
+Install-Module -Name AzureAD -Force
+
+$msiName="HypercubeIdentity2"
 $msiObjectId = Read-Host -Prompt 'Input the HyperIdentity objectId: '
 # Windows Azure Active Directory
 $GraphAppId = "00000002-0000-0000-c000-000000000000"
