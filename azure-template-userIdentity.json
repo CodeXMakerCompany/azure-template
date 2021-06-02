@@ -73,7 +73,7 @@
           }          
         ],
         "assignableScopes": [
-          "/subscriptions/[subscription().id]/resourcegroups/[resourceGroup().id]"
+          "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group"
         ]
       }
     },
