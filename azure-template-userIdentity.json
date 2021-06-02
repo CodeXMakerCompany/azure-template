@@ -45,7 +45,8 @@
     "identity": "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HypercubeIdentity2",
     "roleDefName": "[guid(subscription().id, string(parameters('actions')), string(parameters('notActions')))]",
     "roleDefinitionName": "[guid(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), variables('roleDefinitionId'), resourceGroup().id)]",
-    "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefName'))]"
+    "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefName'))]",
+    "GraphAppId": "00000002-0000-0000-c000-000000000000"
   },
   "resources": [
     {
@@ -94,11 +95,57 @@
     {
       "type": "Microsoft.Resources/deploymentScripts",
       "apiVersion": "2020-10-01",
+      "name": "grantPermissionsByPowerShellv2",
+      "location": "East US",
+      "kind": "AzurePowerShell",
+      "dependsOn": [
+        "[variables('roleDefName')]"
+      ],
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[variables('identity')]": {}
+        }
+      },
+      "properties": {
+        "forceUpdateTag": "[parameters('utcValue')]",
+        "timeout": "PT30M",
+        "azPowerShellVersion": "3.0",
+        "environmentVariables": [
+          {
+            "name": "identityName",
+            "value": "[variables('identityName')]"
+          },
+          {
+            "name": "graphAppId",
+            "value": "[variables('GraphAppId')]"
+          },
+          {
+            "name": "groupName",
+            "value": "[resourceGroup().name]"
+          },
+          {
+            "name": "msiObjectId",
+            "value": "[reference(variables('identityName')).principalId]"
+          },
+          {
+            "name": "subscription",
+            "value": "[subscription().displayName]"
+          }
+        ],
+        "primaryScriptUri": "https://raw.githubusercontent.com/CodeXMakerCompany/azure-template/master/azure-template-permissions.ps1",
+        "cleanupPreference": "OnSuccess",
+        "retentionInterval": "P1D"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2020-10-01",
       "name": "deployAppRegistrationv1",
       "location": "East US",
       "kind": "AzureCLI",
       "dependsOn": [
-        "[variables('roleDefinitionName')]"
+        "grantPermissionsByPowerShellv2"
       ],
       "identity": {
         "type": "UserAssigned",
