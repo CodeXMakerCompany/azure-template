@@ -11,7 +11,7 @@ $PermissionName   = 'Application.ReadWrite.OwnedBy'
 echo "----------------------------------------------"
 echo "----------------------------------------------"
 
-$GraphServicePrincipal = Get-AzADServicePrincipal -Filter 'appId eq `$GraphAppId`'
+$GraphServicePrincipal = Get-AzADServicePrincipal -ApplicationId $GraphAppId
 
 $AppRole = $GraphServicePrincipal.AppRoles | Where-Object {$_.Value -eq $PermissionName -and $_.AllowedMemberTypes -contains 'Application'}
 New-AzureAdServiceAppRoleAssignment -ObjectId $msiObjectId -PrincipalId $msiObjectId -ResourceId $GraphServicePrincipal.ObjectId -Id $AppRole.Id
