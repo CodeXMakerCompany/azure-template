@@ -44,6 +44,7 @@
     "identityName": "HypercubeIdentity2",
     "identity": "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HypercubeIdentity2",
     "roleDefName": "[guid(subscription().id, string(parameters('actions')), string(parameters('notActions')))]",
+    "roleDefinitionName": "[guid(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName')), variables('roleDefinitionId'), resourceGroup().id)]",
     "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('roleDefName'))]"
   },
   "resources": [
@@ -72,14 +73,14 @@
           }          
         ],
         "assignableScopes": [
-          "[subscription().id]"
+          "/subscriptions/[subscription().id]/resourcegroups/[resourceGroup().id]"
         ]
       }
     },
     {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2020-04-01-preview",
-      "name": "RoleAssignment",
+      "name": "[variables('roleDefinitionName')]",
       "dependsOn": [
         "[variables('roleDefName')]"
       ],
@@ -97,7 +98,7 @@
       "location": "East US",
       "kind": "AzureCLI",
       "dependsOn": [
-        "RoleAssignment"
+        "[variables('roleDefinitionName')]"
       ],
       "identity": {
         "type": "UserAssigned",
