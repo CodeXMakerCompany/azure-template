@@ -2,17 +2,14 @@
 #Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 #Install-Module -Name Az -Confirm:$false -Force
 #Import-Module Az
-
-
-echo "----------------------------------------------"
-echo "----------------------------------------------"
-
 $msiName          = ${Env:identityName}
 $msiObjectId      = ${Env:msiObjectId}
 $msiResourceGroup = ${Env:groupName}
 $GraphAppId       = ${Env:graphAppId}
 $PermissionName   = 'Application.ReadWrite.OwnedBy'
 
+echo "----------------------------------------------"
+echo "----------------------------------------------"
 
 $GraphServicePrincipal = Get-AzADServicePrincipal -Filter 'appId eq `$GraphAppId`'
 
