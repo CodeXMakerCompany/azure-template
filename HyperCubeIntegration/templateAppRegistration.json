@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "utcValue": {
+        "defaultValue": "[utcNow()]",
+        "type": "String"
+      }
+    },
+    "variables": {
+      "identity": "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HypercubeIdentity2"
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Resources/deploymentScripts",
+        "apiVersion": "2020-10-01",
+        "name": "deployAppRegistrationv1",
+        "location": "East US",
+        "kind": "AzureCLI",
+        "identity": {
+          "type": "UserAssigned",
+          "userAssignedIdentities": {
+            "[variables('identity')]": {}
+          }
+        },
+        "properties": {
+          "forceUpdateTag": "[parameters('utcValue')]",
+          "AzCliVersion": "2.0.80",
+          "timeout": "PT30M",
+          "scriptContent": "az ad app create --display-name Hypercube",
+          "cleanupPreference": "OnSuccess",
+          "retentionInterval": "P1D"
+        }
+      }
+    ]
+  }
