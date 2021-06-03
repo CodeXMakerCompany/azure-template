@@ -8,7 +8,8 @@
       }
     },
     "variables": {
-      "identity": "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HypercubeIdentity2"
+      // "identity": "/subscriptions/a8944462-d573-4890-9a5b-dd74400cf74e/resourcegroups/hyper-resource-group/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HypercubeIdentity2",
+      "identity": "[concat('/subscriptions/', subscription().id, 'resourcegroups/', resourceGroup().name, '/providers/Microsoft.ManagedIdentity/userAssignedIdentities/HypercubeIdentity')]"
     },
     "resources": [
       {
