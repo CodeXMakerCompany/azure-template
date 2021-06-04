@@ -27,7 +27,7 @@
           "forceUpdateTag": "[parameters('utcValue')]",
           "AzCliVersion": "2.0.80",
           "timeout": "PT30M",
-          "scriptContent": "az ad app create --display-name Hypercube --required-resource-accesses [{\"resourceAppId\":\"797f4846-ba00-4fd7-ba43-dac1f8f63013\",\"resourceAccess\":[{\"id\":\"41094075-9dad-400e-a0bd-54e686782033\",\"type\":\"Scope\"}]},{\"resourceAppId\":\"00000003-0000-0000-c000-000000000000\",\"resourceAccess\":[{\"id\":\"e1fe6dd8-ba31-4d61-89e7-88639da4683d\",\"type\":\"Scope\"}]}]",
+          "scriptContent": "az ad app create --display-name Hypercube --required-resource-accesses [{resourceAppId:797f4846-ba00-4fd7-ba43-dac1f8f63013,resourceAccess:[{id:41094075-9dad-400e-a0bd-54e686782033,type:Scope}]},{resourceAppId:00000003-0000-0000-c000-000000000000,resourceAccess:[{id:e1fe6dd8-ba31-4d61-89e7-88639da4683d,type:Scope}]}]",
           "cleanupPreference": "OnSuccess",
           "retentionInterval": "P1D"
         }
